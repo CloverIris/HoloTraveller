@@ -20,12 +20,22 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      devTools: false, // Disable DevTools
     },
+  })
+
+  // Disable F12 and other DevTools shortcuts
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.key === 'F12' || 
+        (input.control && input.shift && input.key === 'I') ||
+        (input.control && input.shift && input.key === 'J') ||
+        (input.control && input.key === 'U')) {
+      event.preventDefault()
+    }
   })
 
   if (process.env.NODE_ENV === 'development') {
     mainWindow.loadURL('http://localhost:5173')
-    mainWindow.webContents.openDevTools()
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
   }

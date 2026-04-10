@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import type { Node, Edge, Thread, Trajectory, CognitiveFramework, AntifragilityProfile, AppSettings, NavigationState, GraphFilter } from '@/types'
 
+export type ViewMode = 'network' | 'trajectory' | 'threads' | 'frameworks' | 'antifragility'
+
 export interface AppState {
   // Data
   nodes: Node[]
@@ -14,7 +16,7 @@ export interface AppState {
   selectedNodeId: string | null
   selectedThreadId: string | null
   selectedTrajectoryId: string | null
-  viewMode: 'network' | 'trajectory' | 'threads' | 'frameworks' | 'antifragility'
+  viewMode: ViewMode
   navigationState: NavigationState | null
   graphFilter: GraphFilter
   

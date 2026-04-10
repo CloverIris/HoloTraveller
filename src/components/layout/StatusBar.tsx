@@ -1,33 +1,11 @@
-'use client'
-
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Wifi, 
-  WifiOff,
-  CheckCircle2,
-  Activity,
-  Clock,
-  Terminal,
-  Keyboard,
-  Maximize2,
-  Minimize2
-} from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { useAppStore } from '@/stores/appStore'
-import { calculateChaosMetrics } from '@/core/chaos'
 
-interface StatusBarProps {
-  className?: string
-}
-
-export function StatusBar({ className }: StatusBarProps) {
-  const { nodes, edges, threads, viewMode } = useAppStore()
-  const [isOnline, setIsOnline] = useState(true)
+export function StatusBar() {
+  const { nodes, edges, selectedNodeId } = useAppStore()
   const [currentTime, setCurrentTime] = useState(new Date())
-  const [showShortcuts, setShowShortcuts] = useState(false)
-  const [chaosLevel, setChaosLevel] = useState(0.5)
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [phase, setPhase] = useState<'WANDER' | 'FOCUS' | 'SURGE'>('WANDER')
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
@@ -35,182 +13,129 @@ export function StatusBar({ className }: StatusBarProps) {
   }, [])
 
   useEffect(() => {
-    if (nodes.length > 0) {
-      const metrics = calculateChaosMetrics(nodes, edges)
-      setChaosLevel(metrics.chaosDegree)
-    }
-  }, [nodes, edges])
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
-    
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-    
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
+    // Simulate phase change based on activity
+    const interval = setInterval(() => {
+      setPhase(prev => {
+        if (prev === 'WANDER') return 'FOCUS'
+        if (prev === 'FOCUS') return 'SURGE'
+        return 'WANDER'
+      })
+    }, 30000)
+    return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement)
-    }
-    document.addEventListener('fullscreenchange', handleFullscreenChange)
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
-  }, [])
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen()
-    } else {
-      document.exitFullscreen()
-    }
+  const phaseColors = {
+    WANDER: 'bg-amber-400',
+    FOCUS: 'bg-[var(--ht-accent)]',
+    SURGE: 'bg-purple-500',
   }
 
-  const getChaosColor = (level: number) => {
-    if (level < 0.3) return 'text-emerald-500'
-    if (level < 0.6) return 'text-amber-500'
-    return 'text-rose-500'
-  }
-
-  const getChaosLabel = (level: number) => {
-    if (level < 0.3) return '有序'
-    if (level < 0.6) return '混沌边缘'
-    return '高混沌'
+  const phaseLabels = {
+    WANDER: '漫游',
+    FOCUS: '专注',
+    SURGE: '涌动',
   }
 
   return (
-    <div className={cn(
-      "h-7 flex items-center justify-between px-3 text-[11px] border-t border-[var(--fluent-stroke-rest)] bg-[var(--fluent-bg-surface)] flex-shrink-0",
-      className
-    )}>
-      {/* Left Section - Status & Stats */}
-      <div className="flex items-center gap-4 min-w-0">
+    <footer className="h-7 flex items-center justify-between px-3 bg-[var(--ht-bg-secondary)] border-t border-[var(--ht-border-default)] shrink-0 text-[11px]">
+      {/* Left Section */}
+      <div className="flex items-center gap-4">
         {/* Connection Status */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          {isOnline ? (
-            <>
-              <Wifi className="h-3 w-3 text-emerald-500 flex-shrink-0" />
-              <span className="text-[var(--fluent-text-secondary)] whitespace-nowrap">已连接</span>
-            </>
-          ) : (
-            <>
-              <WifiOff className="h-3 w-3 text-rose-500 flex-shrink-0" />
-              <span className="text-rose-500 whitespace-nowrap">离线</span>
-            </>
-          )}
+        <div className="flex items-center gap-1.5 text-[var(--ht-text-secondary)]">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+          </span>
+          <span>已连接</span>
         </div>
 
-        {/* Sync Status */}
-        <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
-          <CheckCircle2 className="h-3 w-3 text-emerald-500 flex-shrink-0" />
-          <span className="text-[var(--fluent-text-secondary)] whitespace-nowrap">已同步</span>
+        {/* Cognitive Phase */}
+        <div className="flex items-center gap-2">
+          <span className="text-[var(--ht-text-tertiary)]">认知相态</span>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={phase}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="flex items-center gap-1.5"
+            >
+              <div className={cn("w-2 h-2 rounded-full", phaseColors[phase])} />
+              <span className="font-medium text-[var(--ht-text-primary)]">{phaseLabels[phase]}</span>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Chaos Level */}
-        <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
-          <Activity className={cn("h-3 w-3 flex-shrink-0", getChaosColor(chaosLevel))} />
-          <span className="text-[var(--fluent-text-secondary)] whitespace-nowrap">混沌度:</span>
-          <span className={cn("font-medium whitespace-nowrap", getChaosColor(chaosLevel))}>
-            {getChaosLabel(chaosLevel)}
+        {/* Activity Stats */}
+        <div className="flex items-center gap-3 text-[var(--ht-text-tertiary)]">
+          <span className="flex items-center gap-1">
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+            </svg>
+            {nodes.length} 节点
+          </span>
+          <span className="flex items-center gap-1">
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            {edges.length} 连接
           </span>
         </div>
-
-        {/* Stats */}
-        <div className="hidden lg:flex items-center gap-2 px-2 py-0.5 rounded bg-[var(--fluent-fill-subtle)] flex-shrink-0">
-          <span className="text-[var(--fluent-text-secondary)] whitespace-nowrap">{nodes.length} 节点</span>
-          <span className="text-[var(--fluent-stroke-rest)]">|</span>
-          <span className="text-[var(--fluent-text-secondary)] whitespace-nowrap">{edges.length} 连接</span>
-          <span className="text-[var(--fluent-stroke-rest)]">|</span>
-          <span className="text-[var(--fluent-text-secondary)] whitespace-nowrap">{threads.length} 线程</span>
-        </div>
       </div>
 
-      {/* Center - View Info */}
-      <div className="hidden lg:block text-[var(--fluent-text-tertiary)] whitespace-nowrap px-4">
-        {viewMode === 'network' && '探索网络'}
-        {viewMode === 'threads' && '线程管理'}
-        {viewMode === 'frameworks' && '意义结构'}
-        {viewMode === 'antifragility' && '反脆弱训练'}
-        {viewMode === 'trajectory' && '轨迹视图'}
-      </div>
-
-      {/* Right Section - Tools */}
-      <div className="flex items-center gap-3 flex-shrink-0">
-        {/* Current Time */}
-        <div className="flex items-center gap-1 text-[var(--fluent-text-secondary)] flex-shrink-0">
-          <Clock className="h-3 w-3 flex-shrink-0" />
-          <span className="whitespace-nowrap">{currentTime.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
-        </div>
-
-        {/* Shortcuts Help */}
-        <button
-          onClick={() => setShowShortcuts(!showShortcuts)}
-          className="flex items-center gap-1 text-[var(--fluent-text-secondary)] hover:text-[var(--fluent-accent-rest)] transition-colors flex-shrink-0"
-        >
-          <Keyboard className="h-3 w-3 flex-shrink-0" />
-          <span className="hidden sm:inline whitespace-nowrap">快捷键 (?)</span>
-        </button>
-
-        {/* Terminal Toggle */}
-        <button
-          onClick={() => window.dispatchEvent(new CustomEvent('toggleTerminal'))}
-          className="hidden sm:flex items-center gap-1 text-[var(--fluent-text-secondary)] hover:text-[var(--fluent-accent-rest)] transition-colors flex-shrink-0"
-        >
-          <Terminal className="h-3 w-3 flex-shrink-0" />
-          <span className="whitespace-nowrap">终端</span>
-        </button>
-
-        {/* Fullscreen Toggle */}
-        <button
-          onClick={toggleFullscreen}
-          className="flex items-center gap-1 text-[var(--fluent-text-secondary)] hover:text-[var(--fluent-accent-rest)] transition-colors flex-shrink-0"
-        >
-          {isFullscreen ? <Minimize2 className="h-3 w-3 flex-shrink-0" /> : <Maximize2 className="h-3 w-3 flex-shrink-0" />}
-        </button>
-      </div>
-
-      {/* Shortcuts Modal */}
-      <AnimatePresence>
-        {showShortcuts && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-8 right-4 z-50 w-72"
-          >
-            <div className="rounded-xl bg-[var(--fluent-bg-card)] shadow-depth-16 border border-[var(--fluent-stroke-rest)] p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-[var(--fluent-text-primary)]">键盘快捷键</h3>
-                <button onClick={() => setShowShortcuts(false)} className="text-[var(--fluent-text-tertiary)] hover:text-[var(--fluent-text-primary)] text-lg">
-                  ×
-                </button>
-              </div>
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-[var(--fluent-text-secondary)]">Command Palette</span>
-                  <kbd className="px-1.5 py-0.5 rounded bg-[var(--fluent-fill-secondary)] text-[var(--fluent-text-primary)]">⌘K</kbd>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[var(--fluent-text-secondary)]">新建节点</span>
-                  <kbd className="px-1.5 py-0.5 rounded bg-[var(--fluent-fill-secondary)] text-[var(--fluent-text-primary)]">⌘N</kbd>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[var(--fluent-text-secondary)]">切换视图</span>
-                  <kbd className="px-1.5 py-0.5 rounded bg-[var(--fluent-fill-secondary)] text-[var(--fluent-text-primary)]">⌘1-5</kbd>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[var(--fluent-text-secondary)]">切换侧边栏</span>
-                  <kbd className="px-1.5 py-0.5 rounded bg-[var(--fluent-fill-secondary)] text-[var(--fluent-text-primary)]">⌘B</kbd>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+      {/* Center Section - Context Info */}
+      <div className="flex items-center gap-4 text-[var(--ht-text-tertiary)]">
+        {selectedNodeId ? (
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ht-accent)]" />
+            已选择节点
+          </span>
+        ) : (
+          <span className="flex items-center gap-1.5">
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            上次更新: {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
         )}
-      </AnimatePresence>
-    </div>
+      </div>
+
+      {/* Right Section */}
+      <div className="flex items-center gap-3 text-[var(--ht-text-tertiary)]">
+        {/* Sync Status */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-1 hover:text-[var(--ht-text-secondary)] transition-colors"
+        >
+          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>同步</span>
+        </motion.button>
+
+        {/* Keyboard Shortcut Hint */}
+        <div className="flex items-center gap-1.5">
+          <kbd className="px-1 py-0.5 bg-[var(--ht-bg-tertiary)] border border-[var(--ht-border-default)] rounded text-[10px]">
+            ⌘
+          </kbd>
+          <span>/</span>
+          <kbd className="px-1 py-0.5 bg-[var(--ht-bg-tertiary)] border border-[var(--ht-border-default)] rounded text-[10px]">
+            Ctrl
+          </kbd>
+          <span>+</span>
+          <kbd className="px-1 py-0.5 bg-[var(--ht-bg-tertiary)] border border-[var(--ht-border-default)] rounded text-[10px]">
+            K
+          </kbd>
+          <span className="text-[var(--ht-text-tertiary)]">命令面板</span>
+        </div>
+      </div>
+    </footer>
   )
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ')
 }

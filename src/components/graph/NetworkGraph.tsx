@@ -1,124 +1,197 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  addEdge,
   useNodesState,
   useEdgesState,
-  type Connection,
-  type Edge as FlowEdge,
   type Node as FlowNode,
+  type Edge as FlowEdge,
+  Panel,
 } from 'reactflow'
+import { motion } from 'framer-motion'
 import 'reactflow/dist/style.css'
+
 import { useAppStore } from '@/stores/appStore'
-// Types are inferred from store
 
-interface NetworkGraphProps {
-  onNodeSelect?: (nodeId: string) => void
-}
 
+// Node type color mapping
 const nodeTypeColors: Record<string, string> = {
   concept: '#3b82f6',
   goal: '#22c55e',
-  milestone: '#eab308',
-  exploration: '#f97316',
-  insight: '#8b5cf6',
-  thread: '#ec4899',
+  milestone: '#8b5cf6',
+  insight: '#f59e0b',
+  resource: '#6b7280',
+  default: '#64748b',
 }
 
-export function NetworkGraph({ onNodeSelect }: NetworkGraphProps) {
+
+
+// Sample data for initial display
+const sampleNodes: FlowNode[] = [
+  { 
+    id: '1', 
+    position: { x: 100, y: 100 }, 
+    data: { label: '认知网络理论', type: 'concept' },
+    style: { background: '#3b82f6' },
+  },
+  { 
+    id: '2', 
+    position: { x: 400, y: 200 }, 
+    data: { label: '完成论文写作', type: 'goal' },
+    style: { background: '#22c55e' },
+  },
+  { 
+    id: '3', 
+    position: { x: 700, y: 150 }, 
+    data: { label: '灵感涌现', type: 'insight' },
+    style: { background: '#f59e0b' },
+  },
+  { 
+    id: '4', 
+    position: { x: 250, y: 400 }, 
+    data: { label: '第一阶段完成', type: 'milestone' },
+    style: { background: '#8b5cf6' },
+  },
+  { 
+    id: '5', 
+    position: { x: 550, y: 450 }, 
+    data: { label: '参考资料库', type: 'resource' },
+    style: { background: '#6b7280' },
+  },
+]
+
+const sampleEdges: FlowEdge[] = [
+  { id: 'e1-2', source: '1', target: '2', type: 'smoothstep' },
+  { id: 'e2-3', source: '2', target: '3', type: 'smoothstep', animated: true },
+  { id: 'e1-4', source: '1', target: '4', type: 'smoothstep' },
+  { id: 'e4-5', source: '4', target: '5', type: 'smoothstep' },
+  { id: 'e2-5', source: '2', target: '5', type: 'smoothstep', animated: true },
+]
+
+export function NetworkGraph() {
   const { nodes: appNodes, edges: appEdges, selectedNodeId, setSelectedNodeId } = useAppStore()
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [isReady, setIsReady] = useState(false)
 
-  // Convert app nodes/edges to ReactFlow format
+  const hasData = appNodes.length > 0
+  
+  const initialNodes = useMemo<FlowNode[]>(() => {
+    if (hasData) {
+      return appNodes.map((n, i) => ({
+        id: n.id,
+        position: { x: n.x ?? i * 100, y: n.y ?? i * 50 },
+        data: { label: n.label, type: n.type },
+        style: { 
+          background: nodeTypeColors[n.type as string] || nodeTypeColors.default,
+        },
+        selected: n.id === selectedNodeId,
+      }))
+    }
+    return sampleNodes
+  }, [appNodes, hasData, selectedNodeId])
+
+  const initialEdges = useMemo<FlowEdge[]>(() => {
+    if (hasData) {
+      return appEdges.map(e => ({
+        id: e.id,
+        source: e.source,
+        target: e.target,
+        type: 'smoothstep',
+      }))
+    }
+    return sampleEdges
+  }, [appEdges, hasData])
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+  const [edges, , onEdgesChange] = useEdgesState(initialEdges)
+
   useEffect(() => {
-    const flowNodes: FlowNode[] = appNodes.map((node) => ({
-      id: node.id,
-      type: 'default',
-      position: { x: node.x || Math.random() * 600, y: node.y || Math.random() * 400 },
-      data: { label: node.label, node },
-      style: {
-        background: nodeTypeColors[node.type] || '#3b82f6',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '8px',
-        padding: '10px 15px',
-        fontSize: '14px',
-        fontWeight: 500,
-        boxShadow: selectedNodeId === node.id 
-          ? '0 0 0 3px rgba(59, 130, 246, 0.5)' 
-          : '0 2px 4px rgba(0,0,0,0.1)',
-        opacity: node.metadata.energyLevel < 0.3 ? 0.5 : 1,
-      },
-    }))
+    setNodes(nds => nds.map(n => ({
+      ...n,
+      selected: n.id === selectedNodeId,
+    })))
+  }, [selectedNodeId, setNodes])
 
-    const flowEdges: FlowEdge[] = appEdges.map((edge) => ({
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      type: 'smoothstep',
-      style: { 
-        stroke: edge.type === 'emergence' ? '#f43f5e' : '#94a3b8',
-        strokeWidth: 1 + edge.strength * 2,
-        opacity: 0.6,
-      },
-      animated: edge.type === 'emergence',
-    }))
-
-    setNodes(flowNodes)
-    setEdges(flowEdges)
-    setIsReady(true)
-  }, [appNodes, appEdges, selectedNodeId, setNodes, setEdges])
-
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      setEdges((eds) => addEdge(connection, eds))
-    },
-    [setEdges]
-  )
-
-  const onNodeClick = useCallback(
-    (_: React.MouseEvent, node: FlowNode) => {
-      setSelectedNodeId(node.id)
-      onNodeSelect?.(node.id)
-    },
-    [setSelectedNodeId, onNodeSelect]
-  )
+  const onNodeClick = useCallback((_: React.MouseEvent, node: FlowNode) => {
+    setSelectedNodeId(node.id === selectedNodeId ? null : node.id)
+  }, [selectedNodeId, setSelectedNodeId])
 
   const onPaneClick = useCallback(() => {
     setSelectedNodeId(null)
   }, [setSelectedNodeId])
 
-  if (!isReady) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-muted-foreground">加载网络图中...</div>
-      </div>
-    )
-  }
-
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         fitView
-        attributionPosition="bottom-right"
+        fitViewOptions={{ padding: 0.2 }}
+        minZoom={0.1}
+        maxZoom={2}
+        proOptions={{ hideAttribution: true }}
       >
-        <Background color="#94a3b8" gap={16} size={1} />
-        <Controls />
-        <MiniMap 
-          nodeStrokeWidth={3}
-          nodeColor={(node) => nodeTypeColors[node.data?.node?.type] || '#3b82f6'}
+        <Background 
+          color="var(--ht-border-default)" 
+          gap={24} 
+          size={1}
+          className="opacity-50"
         />
+        
+        <Controls 
+          className="!bg-[var(--ht-bg-elevated)] !border-[var(--ht-border-default)] !rounded-xl !shadow-lg"
+        />
+        
+        <MiniMap 
+          className="!bg-[var(--ht-bg-secondary)] !border-[var(--ht-border-default)] !rounded-xl !shadow-lg"
+          nodeColor={(node) => node.style?.background as string || '#64748b'}
+          maskColor="rgba(0, 0, 0, 0.1)"
+        />
+
+        {/* Empty state hint */}
+        {!hasData && (
+          <Panel position="top-center" className="mt-4">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="px-4 py-2 bg-[var(--ht-bg-elevated)] border border-[var(--ht-border-default)] rounded-full shadow-lg text-sm text-[var(--ht-text-secondary)]"
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-[var(--ht-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                这是示例数据。按 ⌘N 创建你的第一个节点
+              </span>
+            </motion.div>
+          </Panel>
+        )}
+
+        {/* Quick stats panel */}
+        <Panel position="top-right" className="mt-4 mr-4">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="px-3 py-2 bg-[var(--ht-bg-elevated)]/90 backdrop-blur-sm border border-[var(--ht-border-default)] rounded-xl shadow-lg"
+          >
+            <div className="flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-[var(--ht-text-secondary)]">概念</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-[var(--ht-text-secondary)]">目标</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-purple-500" />
+                <span className="text-[var(--ht-text-secondary)]">里程碑</span>
+              </div>
+            </div>
+          </motion.div>
+        </Panel>
       </ReactFlow>
     </div>
   )

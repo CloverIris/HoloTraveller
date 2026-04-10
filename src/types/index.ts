@@ -220,7 +220,7 @@ export interface GraphState {
   nodes: Node[];
   edges: Edge[];
   selectedNodeId?: string;
-  viewMode: 'network' | 'trajectory' | 'threads';
+  viewMode: 'network' | 'trajectory' | 'threads' | 'frameworks' | 'antifragility';
   filter: GraphFilter;
 }
 
