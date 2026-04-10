@@ -2,50 +2,167 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   Fluent Design System v2 - Design Tokens
+   ============================================ */
+
 @layer base {
   :root {
-    --background: 220 20% 98%;
-    --foreground: 220 20% 10%;
+    /* Base Colors - Fluent Light Theme */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 0 0% 9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
-    --primary: 220 70% 50%;
+    --popover-foreground: 0 0% 9%;
+    --primary: 207 100% 42%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 15% 95%;
-    --secondary-foreground: 220 20% 20%;
-    --muted: 220 15% 95%;
-    --muted-foreground: 220 10% 45%;
-    --accent: 220 15% 95%;
-    --accent-foreground: 220 20% 20%;
-    --destructive: 0 70% 50%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
-    --ring: 220 70% 50%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 207 100% 42%;
     --radius: 0.5rem;
+
+    /* Fluent Design Tokens */
+    
+    /* Accent Colors */
+    --fluent-accent-rest: #0078d4;
+    --fluent-accent-hover: #106ebe;
+    --fluent-accent-active: #005a9e;
+    --fluent-accent-disabled: rgba(0, 120, 212, 0.3);
+    --fluent-accent-foreground: #ffffff;
+    
+    /* Fill Colors */
+    --fluent-fill-rest: #ffffff;
+    --fluent-fill-hover: rgba(128, 128, 128, 0.1);
+    --fluent-fill-active: rgba(128, 128, 128, 0.15);
+    --fluent-fill-selected: rgba(0, 95, 184, 0.1);
+    --fluent-fill-subtle: rgba(0, 0, 0, 0.024);
+    --fluent-fill-secondary: rgba(0, 0, 0, 0.06);
+    --fluent-fill-tertiary: rgba(0, 0, 0, 0.09);
+    
+    /* Stroke/Border Colors */
+    --fluent-stroke-rest: rgba(0, 0, 0, 0.06);
+    --fluent-stroke-hover: rgba(0, 0, 0, 0.09);
+    --fluent-stroke-active: rgba(0, 0, 0, 0.12);
+    --fluent-stroke-focus: #0078d4;
+    --fluent-stroke-card: rgba(0, 0, 0, 0.05);
+    
+    /* Text Colors */
+    --fluent-text-primary: rgba(0, 0, 0, 0.9);
+    --fluent-text-secondary: rgba(0, 0, 0, 0.61);
+    --fluent-text-tertiary: rgba(0, 0, 0, 0.45);
+    --fluent-text-disabled: rgba(0, 0, 0, 0.36);
+    
+    /* Background Colors */
+    --fluent-bg-page: #f3f3f3;
+    --fluent-bg-card: #ffffff;
+    --fluent-bg-surface: #fafafa;
+    --fluent-bg-overlay: rgba(0, 0, 0, 0.4);
+    
+    /* Acrylic Effect */
+    --acrylic-bg: rgba(255, 255, 255, 0.85);
+    --acrylic-blur: blur(20px) saturate(180%);
+    --acrylic-border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    /* Mica Effect (simplified) */
+    --mica-bg: linear-gradient(135deg, #f0f0f0 0%, #ffffff 50%, #f5f5f5 100%);
+    
+    /* Smoke Effect */
+    --smoke-bg: rgba(0, 0, 0, 0.4);
+    
+    /* Shadow System */
+    --shadow-rest: 0 2px 4px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.08);
+    --shadow-active: 0 4px 8px rgba(0, 0, 0, 0.06);
+    --shadow-flyout: 0 12px 40px rgba(0, 0, 0, 0.15);
+    --shadow-dialog: 0 25px 50px rgba(0, 0, 0, 0.25);
+    --shadow-depth-4: 0 1.6px 3.6px 0 rgba(0,0,0,0.13), 0 0.3px 0.9px 0 rgba(0,0,0,0.11);
+    --shadow-depth-8: 0 3.2px 7.2px 0 rgba(0,0,0,0.13), 0 0.6px 1.8px 0 rgba(0,0,0,0.11);
+    --shadow-depth-16: 0 6.4px 14.4px 0 rgba(0,0,0,0.13), 0 1.2px 3.6px 0 rgba(0,0,0,0.11);
+    --shadow-depth-64: 0 25.6px 57.6px 0 rgba(0,0,0,0.22), 0 4.8px 14.4px 0 rgba(0,0,0,0.18);
+    
+    /* Border Radius System */
+    --radius-none: 0px;
+    --radius-small: 4px;
+    --radius-medium: 8px;
+    --radius-large: 12px;
+    --radius-xlarge: 16px;
+    --radius-circle: 9999px;
+    
+    /* Animation Curves */
+    --ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+    --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* Animation Durations */
+    --duration-fast: 100ms;
+    --duration-normal: 200ms;
+    --duration-slow: 300ms;
+    --duration-slower: 400ms;
   }
 
   .dark {
-    --background: 220 20% 6%;
-    --foreground: 220 15% 95%;
-    --card: 220 20% 8%;
-    --card-foreground: 220 15% 95%;
-    --popover: 220 20% 8%;
-    --popover-foreground: 220 15% 95%;
-    --primary: 220 70% 55%;
+    --background: 0 0% 6%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 207 100% 42%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 15% 15%;
-    --secondary-foreground: 220 15% 90%;
-    --muted: 220 15% 15%;
-    --muted-foreground: 220 10% 55%;
-    --accent: 220 15% 15%;
-    --accent-foreground: 220 15% 90%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 90%;
     --destructive: 0 60% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 18%;
-    --input: 220 15% 18%;
-    --ring: 220 70% 55%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 207 100% 50%;
+
+    /* Fluent Dark Theme Tokens */
+    --fluent-accent-rest: #4cc2ff;
+    --fluent-accent-hover: #47b1eb;
+    --fluent-accent-active: #3aa0d9;
+    
+    --fluent-fill-rest: #1e1e1e;
+    --fluent-fill-hover: rgba(255, 255, 255, 0.06);
+    --fluent-fill-active: rgba(255, 255, 255, 0.09);
+    --fluent-fill-selected: rgba(0, 120, 212, 0.2);
+    --fluent-fill-subtle: rgba(255, 255, 255, 0.03);
+    --fluent-fill-secondary: rgba(255, 255, 255, 0.06);
+    --fluent-fill-tertiary: rgba(255, 255, 255, 0.09);
+    
+    --fluent-stroke-rest: rgba(255, 255, 255, 0.06);
+    --fluent-stroke-hover: rgba(255, 255, 255, 0.09);
+    --fluent-stroke-active: rgba(255, 255, 255, 0.12);
+    
+    --fluent-text-primary: rgba(255, 255, 255, 0.9);
+    --fluent-text-secondary: rgba(255, 255, 255, 0.61);
+    --fluent-text-tertiary: rgba(255, 255, 255, 0.45);
+    --fluent-text-disabled: rgba(255, 255, 255, 0.36);
+    
+    --fluent-bg-page: #202020;
+    --fluent-bg-card: #1e1e1e;
+    --fluent-bg-surface: #252525;
+    --fluent-bg-overlay: rgba(0, 0, 0, 0.6);
+    
+    --acrylic-bg: rgba(32, 32, 32, 0.85);
+    --acrylic-border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    --shadow-flyout: 0 12px 40px rgba(0, 0, 0, 0.4);
+    --shadow-dialog: 0 25px 50px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -55,48 +172,249 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
 }
 
-/* Custom scrollbar */
+/* ============================================
+   Fluent Design Utilities
+   ============================================ */
+
+@layer utilities {
+  /* Acrylic Effect */
+  .acrylic {
+    background: var(--acrylic-bg);
+    backdrop-filter: var(--acrylic-blur);
+    -webkit-backdrop-filter: var(--acrylic-blur);
+    border: var(--acrylic-border);
+  }
+  
+  .acrylic-fallback {
+    background: var(--fluent-bg-card);
+  }
+  
+  /* Mica Effect */
+  .mica {
+    background: var(--mica-bg);
+  }
+  
+  /* Smoke Overlay */
+  .smoke {
+    background: var(--smoke-bg);
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Shadow Utilities */
+  .shadow-rest {
+    box-shadow: var(--shadow-rest);
+  }
+  
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .shadow-flyout {
+    box-shadow: var(--shadow-flyout);
+  }
+  
+  .shadow-dialog {
+    box-shadow: var(--shadow-dialog);
+  }
+  
+  .shadow-depth-4 {
+    box-shadow: var(--shadow-depth-4);
+  }
+  
+  .shadow-depth-8 {
+    box-shadow: var(--shadow-depth-8);
+  }
+  
+  .shadow-depth-16 {
+    box-shadow: var(--shadow-depth-16);
+  }
+  
+  /* Text Styles */
+  .text-fluent-primary {
+    color: var(--fluent-text-primary);
+  }
+  
+  .text-fluent-secondary {
+    color: var(--fluent-text-secondary);
+  }
+  
+  .text-fluent-tertiary {
+    color: var(--fluent-text-tertiary);
+  }
+  
+  /* Fill Utilities */
+  .fill-subtle {
+    background: var(--fluent-fill-subtle);
+  }
+  
+  .fill-secondary {
+    background: var(--fluent-fill-secondary);
+  }
+  
+  /* Stroke Utilities */
+  .stroke-rest {
+    border-color: var(--fluent-stroke-rest);
+  }
+  
+  .stroke-hover:hover {
+    border-color: var(--fluent-stroke-hover);
+  }
+  
+  /* Animation Utilities */
+  .animate-fade-in {
+    animation: fadeIn var(--duration-normal) var(--ease-standard);
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn var(--duration-normal) var(--ease-spring);
+  }
+  
+  .animate-slide-up {
+    animation: slideUp var(--duration-normal) var(--ease-decelerate);
+  }
+  
+  /* Transition Utilities */
+  .transition-fluent {
+    transition: all var(--duration-normal) var(--ease-standard);
+  }
+  
+  .transition-fast {
+    transition: all var(--duration-fast) var(--ease-standard);
+  }
+  
+  /* Focus Ring */
+  .focus-ring {
+    outline: none;
+  }
+  
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--fluent-accent-rest);
+    outline-offset: 2px;
+  }
+  
+  /* Button Press Effect */
+  .press-effect:active {
+    transform: scale(0.98);
+  }
+  
+  /* Hover Lift Effect */
+  .hover-lift {
+    transition: transform var(--duration-fast) var(--ease-standard),
+                box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+}
+
+/* ============================================
+   Keyframe Animations
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   Custom Scrollbar (Fluent Style)
+   ============================================ */
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 4px;
+  background: rgba(128, 128, 128, 0.4);
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: rgba(128, 128, 128, 0.6);
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: content-box;
 }
 
-/* Graph styles */
-.react-flow__node {
-  @apply transition-all duration-200;
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
-.react-flow__node.selected {
-  @apply ring-2 ring-primary;
-}
+/* ============================================
+   Selection Style
+   ============================================ */
 
-/* Animation utilities */
-.animate-pulse-slow {
-  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+::selection {
+  background: var(--fluent-accent-rest);
+  color: var(--fluent-accent-foreground);
 }

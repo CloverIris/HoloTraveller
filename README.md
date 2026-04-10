@@ -11,10 +11,10 @@
 ---
 
 ## 项目原由与思维过程 / Origin and Thought Process
-
+1
 作者[@ClovreIris](https://github.com/CloverIris)在设计 HoloTraveller 时，洞察到当代认知的**双重困境**：我们既被后现代的不确定性抛入相对主义的眩晕，又被工具理性的过度优化剥夺了探索的自由。HoloScroll 解决了「如何记录」，HoloGraph 解决了「如何看见」，但 **「如何在看不清时行走」** 仍悬而未决。
 
-以下是项目背后的核心思考：
+
 
 - **反脆弱漫游**：真正的探索不是沿着最优路径滑行，而是在**涨落（Fluctuation）**中学习。系统鼓励用户主动踏入**认知的湍流**，将随机性转化为路标，将误差修正为信息。这不是盲目冒险，而是**有治理的冒险**（Governed Adventure）。
 

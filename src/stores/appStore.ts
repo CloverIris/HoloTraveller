@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Node, Edge, Thread, Trajectory, CognitiveFramework, AntifragilityProfile, AppSettings, NavigationState, GraphFilter } from '@/types'
 
-interface AppState {
+export interface AppState {
   // Data
   nodes: Node[]
   edges: Edge[]
